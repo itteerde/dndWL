@@ -130,7 +130,7 @@ defaultConditions :=
 
     (* Probability to succeed in a Roll against DC with nat-1 and nat-20 with buffs. I am not sure this is correct. Looks not obvious at all anymore. *)
     pSuccessBuffed[dc_, modifier_, 0] := pSuccess[dc, modifier];
-    pSuccessBuffed[dc_, modifier_, d_] := If[Equal[modifier,"advantage"],Plus[pSuccess[Plus[dc,Times[-1,i]]],Times[Plus[1,Times[-1,pSuccess[Plus[dc,Times[-1,i]]]]],pSuccess[Plus[dc,Times[-1,i]]]]],If[Equal[modifier,"disadvantage"],Power[pSuccess[Plus[dc,Times[-1,i]]],2],pSuccess[Plus[dc,Times[-1,i]]]]];
+    pSuccessBuffed[dc_, modifier_, d_] := Sum[pSuccess[dc-i,modifier]/d,{i,1,d}];
     pSuccessBuffedNoNats[dc_, modifier_, d_] := Sum[Times[Power[d,-1],pSuccessNoNats[Plus[dc,Times[-1,i]],modifier]],List[i,1,d]];
     pSuccessBuffedBuffed[dc_, modifier_, d1_, d2_] := Sum[Times[Power[d2,-1],pSuccessBuffed[Plus[dc,Times[-1,i]],modifier,d1]],List[i,1,d2]];
     pSuccessBuffedBuffedNoNats[dc_, modifier_, d1_, d2_] := Sum[Times[Power[d2,-1],pSuccessBuffedNoNats[Plus[dc,Times[-1,i]],modifier,d1]],List[i,1,d2]];
@@ -244,3 +244,70 @@ defaultConditions :=
     jumpHigh[str_] := jumpHigh[str, True];
 
     wage[level_] := Piecewise[{{1, level <= 4}, {5, level <= 10}, {20, level <= 16}}, 50] level;
+
+
+(* Unit Testing *)
+
+    runTests[doRun_] := With[{runTests = doRun},
+    If[runTests, testReport = TestReport[{
+       VerificationTest[pSuccess[1], 19/20, TestID -> 1],
+       VerificationTest[pSuccess[20], 1/20, TestID -> 2],
+       VerificationTest[pSuccess[21], 1/20, TestID -> 3],
+       VerificationTest[pSuccessNoNats[1], 1, TestID -> 4],
+       VerificationTest[pSuccessNoNats[21], 0, TestID -> 5],
+       VerificationTest[pSuccess[20, "advantage"], 1 - (19/20)^2, 
+        TestID -> 6],
+       VerificationTest[pSuccess[20, "superadvantage"], 1 - (19/20)^3,
+         TestID -> 7],
+       VerificationTest[pSuccess[30, "disadvantage"], 1/20^2, 
+        TestID -> 8],
+       VerificationTest[pSuccess[30, "superdisadvantage"], 1/20^3, 
+        TestID -> 9],
+       VerificationTest[hDOS[1, 23, defaultConditions[[1, 2]]], 1, 
+        TestID -> 10],
+       VerificationTest[hDOS[1, 22, defaultConditions[[1, 2]]], 
+        19/20 + 1/(20 2), TestID -> 11],
+       VerificationTest[hDOS[1, 3, defaultConditions[[1, 2]]], 1/2, 
+        TestID -> 12],
+       VerificationTest[pSuccessBuffedNoNats[24, "normal", 4], 1/80, 
+        TestID -> 13],
+       VerificationTest[pSuccessBuffedNoNats[25, "normal", 4], 0, 
+        TestID -> 14],
+       VerificationTest[pSuccessBuffed[25, "normal", 4], 1/20, 
+        TestID -> 15]
+       }], Nothing]
+   ];
+
+
+(* Help *)
+
+    help[]:=With[{version="version 0.0.1"},
+        Print[version];
+        Print["help[] dispalys this help."];
+        Print["help[\"pSuccess\"] displays the help for the pSuccess function."];
+        Print["runTests[True][\"AllTestsSucceeded\"] runs unit tests."];
+        Print["Some functions are"];
+        Print[" pSuccess, d, roll"];
+    ];
+    help["pSuccess"]:=With[{},
+        Print["pSuccess[eDC,modifier]"];
+        Print["  - The effective eDC is the DC modified by the sum of boni/mali."];
+        Print["  - modifier is [\"normal\"|\"advantage\"|\"disadvantage\"]"];
+        Print["  > pSuccess[15+2-8,\"advantage\"]"];
+        Print[""];
+        Print["  + You might be looking for pSuccessNoNats[eDC,modifier]."];
+    ];
+    help["d"]:=With[{},
+        Print["d[n]"];
+        Print["  - The average roll with a n-sided fair dice."];
+        Print[""];
+        Print["  + You might be looking for roll[n,dN]."];
+    ];
+    help["roll"]:=With[{},
+        Print["roll[n,dN]"];
+        Print["  - Roll n dN-sided fair dice."];
+        Print[""];
+        Print["  + You might be looking for d[n]."];
+    ];
+    help[]
+
