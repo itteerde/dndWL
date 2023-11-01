@@ -162,6 +162,7 @@ defaultConditions :=
 (* Specific Rules *)
 
     auraOfVitality[lifeCleric_] := 2 d[6] + If[lifeCleric, 5, 0]; (* lifeCleric [True | False] *)
+	prayerOfHealing[level_, spellModifier_, lifeCleric_] := level d[8] + spellModifier + If[lifeCleric, level+2]; (* lifeCleric [True | False] *)
     
     (* Metamagic Extended Duration *)
     auraOfVitalitySum[lifeCleric_, metamagic_] := 10 auraOfVitality[lifeCleric] If[metamagic, 2, 1];
