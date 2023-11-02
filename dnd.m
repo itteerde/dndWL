@@ -169,6 +169,8 @@ defaultConditions :=
 
     avgGreatWeaponFighting[d_] := Mean[(If[#[[1]] < 3, #[[2]], #[[1]]]) & /@ Flatten[Table[{a, b}, {a, 1, d}, {b, 1, d}], 1]];
 
+	bigbysHand[level_] := 4d[8]+If[level>5,(level-5) 2d[8],0];
+
     spiritShroudDamage[level_] := If[Less[level,3],0,Times[Plus[Floor[Times[Plus[level,-3],Power[2,-1]]],1],d[8]]];
 
     damageEldritchBlast[level_, charBonus_, hex_, spiritShroud_] := Times[Plus[1,Floor[Times[Rational[1,6],Plus[1,level]]]],Plus[Times[hex,d[6]],d[10],If[Greater[level,1],charBonus,0],Times[spiritShroud,spiritShroudDamage[If[Less[level,5],0,If[Less[level,9],3,5]]]]]]; (*charBonus=0 for not having AgonizingBlast*)
@@ -243,6 +245,8 @@ defaultConditions :=
     jumpHigh[str_, approachRun_, height_] := Times[Plus[3,Times[Rational[3,2],height],abilityModifier[str]],If[approachRun,1,Times[1,Power[2,-1]]]];
     jumpHigh[str_, approachRun_] := Times[Plus[3,abilityModifier[str]],If[approachRun,1,Times[1,Power[2,-1]]]];
     jumpHigh[str_] := jumpHigh[str, True];
+
+	summonDraconicSpirit[level_] := Floor[level/2](d[6]+4+level) + 2d[6];
 
     wage[level_] := Piecewise[{{1, level <= 4}, {5, level <= 10}, {20, level <= 16}}, 50] level;
 
