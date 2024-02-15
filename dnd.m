@@ -3,8 +3,8 @@
 (* Wolfram Language Tools *)
 
     (* Formatting numbers *)
-    fN[x_] := If[x == Round[x], Round[x], N[x]];
-    fN[x_, digits : _Integer] :=  If[x == Round[x], Round[x], N[x, digits]];
+    fN[x_] := If[IntegerQ[x], x, N[x]];
+    fN[x_, digits : _Integer] :=  If[IntegerQ[x], x, N[x, digits]];
     fN[x_, precision_] :=  If[Abs[x - Round[x]] <= precision, Round[x], N[x]];
     fN[x_, precision_, digits : Integer] := 
         If[Abs[x - Round[x]] <= precision, Round[x], N[x, digits]];
@@ -162,6 +162,7 @@ defaultConditions :=
 (* Specific Rules *)
 
     auraOfVitality[lifeCleric_] := 2 d[6] + If[lifeCleric, 5, 0]; (* lifeCleric [True | False] *)
+    craftingMaterialsDaysLeft[spent_,costsTotal_,weeks_,workWeek_,daysWorked_]:=fN[spent/costsTotal*(weeks*workWeek)-daysWorked];
 	prayerOfHealing[level_, spellModifier_, lifeCleric_] := level d[8] + spellModifier + If[lifeCleric, level+2]; (* lifeCleric [True | False] *)
     
     (* Metamagic Extended Duration *)
