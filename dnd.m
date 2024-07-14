@@ -248,6 +248,8 @@ defaultConditions :=
     jumpHigh[str_] := jumpHigh[str, True];
 
 	summonDraconicSpirit[level_] := Floor[level/2](d[6]+4+level) + 2d[6];
+    summonAberration[level_] := If[level>=4,Floor[level/2](d[8]+3+level),0];
+    summonFiend[level_] := If[level>=6,Floor[level/2](2d[6]+3+level),0];
 
     wage[level_] := Piecewise[{{1, level <= 4}, {5, level <= 10}, {20, level <= 16}}, 50] level;
 
